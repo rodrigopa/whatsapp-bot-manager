@@ -11,14 +11,14 @@ let session;
 let ping;
 let checkBrowserInterval;
 const pupArgs = [
-    // '--no-sandbox',
-    // '--disable-setuid-sandbox',
-    '--disable-dev-shm-usage',
-    '--disable-accelerated-2d-canvas',
-    '--no-first-run',
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    // '--disable-dev-shm-usage',
+    // '--disable-accelerated-2d-canvas',
+    // '--no-first-run',
     // '--no-zygote',
-    '--single-process', // <- this one doesn't works in Windows
-    '--disable-gpu'
+    // '--single-process', // <- this one doesn't works in Windows
+    // '--disable-gpu'
 ];
 
 (async () => {
