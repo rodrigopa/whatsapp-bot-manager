@@ -17,7 +17,8 @@ queue.process((job, done) => {
                     name: `bot-${job.data.id}`,
                     args: [job.data.id],
                     kill_retry_time: 3000,
-                    kill_timeout: 6000
+                    kill_timeout: 6000,
+                    force: true
                 }, (err, proc) => {
                     if (err) {
                         console.error(err);
