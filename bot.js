@@ -1,7 +1,7 @@
 const Queue = require('bee-queue');
 const redis = require('redis');
 const { Client, MessageMedia} = require('whatsapp-web.js');
-const { getContactId, updateBotData, sleep} = require('./utils');
+const { getContactId, updateBotData, sleep, generateQueuePayload, pushToLaravelQueue, generateQueuePayloadForBot} = require('./utils');
 
 const botId = `${process.argv[2]}`;
 const redisClient = redis.createClient();
@@ -24,12 +24,9 @@ const pupArgs = [
 (async () => {
     await redisClient.connect();
 
-    await updateBotData(botId, redisClient,  (data) => {
-        console.log('start: updateBotData: bot data:', data);
-        return Object.assign({}, data, {
-            status: 1
-        });
-    });
+    await updateBotData(botId, redisClient,  (data) =>
+        Object.assign({}, data, { status: 1 })
+    , true);
 
     const redisSession = await redisClient.hGet(`bot-sessions`, botId);
 
@@ -65,14 +62,10 @@ const pupArgs = [
     client.on('ready', async () => {
         await updateBotData(botId, redisClient, (data) =>
             Object.assign({}, data, { status: 3 })
-        );
+        , true);
 
         queue.on('succeeded', async (job, result) => {
-            console.log(`Job event succedeed: ${job.id}, result:`, result);
-            let rawJob = await redisClient.hGet(`bq:${queueName}:jobs`, `${job.id}`);
-            let jobJSON = JSON.parse(rawJob);
-            jobJSON.result = result;
-            await redisClient.sendCommand(['HSET', `bq:${queueName}:jobs`, `${job.id}`, JSON.stringify(jobJSON)]);
+            await pushToLaravelQueue(redisClient, generateQueuePayload({ job_id: `${job.id}`, result }));
         });
 
         queue.process(async (job) => {
@@ -131,7 +124,7 @@ const pupArgs = [
                         screenAt: Date.now(),
                         screen: base64
                     })
-                );
+                , false);
             }, 2200);
         }
     }, 400);
@@ -145,7 +138,8 @@ const listener = function () {
 
         if (redisClient && redisClient.isOpen) {
             await updateBotData(botId, redisClient, data =>
-                Object.assign({}, data, { status: 0 }));
+                Object.assign({}, data, { status: 0 })
+            , true);
 
             await redisClient.disconnect();
         }

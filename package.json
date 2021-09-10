@@ -5,6 +5,7 @@
   "main": "bot.js",
   "dependencies": {
     "bee-queue": "^1.4.0",
+    "php-serialize": "^4.0.2",
     "pm2": "^5.1.1",
     "redis": "^4.0.0-rc.1",
     "whatsapp-web.js": "^1.14.1"

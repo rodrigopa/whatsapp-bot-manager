@@ -16,7 +16,6 @@ queue.process((job, done) => {
                     script: `bot.js`,
                     name: `bot-${job.data.id}`,
                     args: [job.data.id],
-                    force: true,
                     kill_retry_time: 3000,
                     kill_timeout: 6000
                 }, (err, proc) => {
@@ -38,6 +37,22 @@ queue.process((job, done) => {
                 }
 
                 pm2.stop(`bot-${job.data.id}`, (err) => {
+                    if (err) {
+                        return done(null, false);
+                    }
+
+                    pm2.disconnect()
+                    return done(null, true);
+                });
+            });
+            break;
+        case 'remove':
+            pm2.connect(err => {
+                if (err) {
+                    return done(null, false);
+                }
+
+                pm2.delete(`bot-${job.data.id}`, (err) => {
                     if (err) {
                         return done(null, false);
                     }
