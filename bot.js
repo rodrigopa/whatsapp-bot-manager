@@ -69,6 +69,7 @@ const pupArgs = [
         });
 
         queue.process(async (job) => {
+            console.log(`Receiving job: ${job.id}, type: ${job.data.type}, to: ${job.data.number}`);
             switch (job.data.type) {
                 // case 'check-number':
                 //     return await getContactId(client, job.data.number);
@@ -91,8 +92,13 @@ const pupArgs = [
                     }
 
                     await sleep(1500);
+
+                    console.log(`The message sent to ${job.data.number} was processed with result:`, result);
+
                     return true;
             }
+
+            return false;
         });
     });
 
