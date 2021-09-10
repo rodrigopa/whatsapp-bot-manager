@@ -34,7 +34,7 @@ const pupArgs = [
         session = JSON.parse(redisSession);
     }
 
-    const client = new Client({ puppeteer: { args: pupArgs, headless: false }, session: session });
+    const client = new Client({ puppeteer: { args: pupArgs, headless: true }, session: session });
 
     client.on('authenticated', async (session) => {
         await redisClient.hDel(`bot-sessions`, botId);
