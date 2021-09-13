@@ -6,7 +6,9 @@ const { getContactId, updateBotData, sleep, generateQueuePayload, pushToLaravelQ
 const botId = `${process.argv[2]}`;
 const redisClient = redis.createClient();
 const queueName = `bot-${botId}`;
-const queue = new Queue(queueName);
+const queue = new Queue(queueName, {
+    activateDelayedJobs: true
+});
 let session;
 let ping;
 let checkBrowserInterval;
